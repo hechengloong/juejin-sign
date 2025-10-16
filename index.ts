@@ -18,7 +18,7 @@ ${message.get('checkedIn')}
 ${message.get('freeDrawed')}
 `.trim()
 }
-
+let retryCount = 0;
 const message: Map<string, string> = new Map();
 function addMessage(key: string, value: string) {
   message.set(key, value);
@@ -78,6 +78,11 @@ async function signin(page: Page) {
     getUserInfoRes,
     (data) => data.user_basic.user_name
   );
+  if(!userName&&retryCount<3){
+    retryCount++;
+    signin(page)
+    return;
+  }
   addMessage("userName", userName);
 
   const signinStatus = await responseHandler(
